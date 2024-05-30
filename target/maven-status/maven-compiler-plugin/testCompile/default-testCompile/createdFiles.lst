@@ -1,0 +1,4 @@
+com/infy/currencyconverter/repository/CurrencyConversionRateRepositoryTest.class
+com/infy/currencyconverter/CurrencyConverterApplicationTests.class
+com/infy/currencyconverter/controller/CurrencyConverterControllerTest.class
+com/infy/currencyconverter/service/CurrencyConversionServiceTest.class
