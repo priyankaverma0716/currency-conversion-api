@@ -6,6 +6,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.stereotype.Component;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -14,11 +18,6 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,21 +43,20 @@ public class MaskingJsonFormatter implements JsonFormatter {
 
     @Override
     public String toJsonString(Map map) {
-        if (map.containsKey("message")) {
-            Object messageValue = map.get("message");
-            if (messageValue instanceof String) {
-                String message = (String) messageValue;
-                if (isJson(message)) {
-                    // If the message is in JSON format, apply JSON masking logic
-                    message = maskJson(message);
-                } else if (isXml(message)) {
-                    // If the message is in XML format, apply XML masking logic
-                    message = maskXml(message);
-                } else {
-                    // If the message is neither JSON nor XML, treat it as a regular string and apply masking
-                    message = maskString(message);
+        for (Object keyObj : map.keySet()) {
+            if (keyObj instanceof String) {
+                String key = (String) keyObj;
+                Object valueObj = map.get(key);
+                if (valueObj instanceof String) {
+                    String value = (String) valueObj;
+                    if (isJson(value)) {
+                        map.put(key, maskJson(value));
+                    } else if (isXml(value)) {
+                        map.put(key, maskXml(value));
+                    } else {
+                        map.put(key, maskString(value));
+                    }
                 }
-                map.put("message", message);
             }
         }
         try {
